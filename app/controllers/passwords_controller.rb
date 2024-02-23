@@ -3,7 +3,7 @@ class PasswordsController < ApplicationController
   before_action :set_password, except: [:index, :new, :create]
 
   def index
-    @passwords = current_user.passwords.order(created_at: :desc)
+    @passwords = current_user.passwords
   end
 
   def show
@@ -14,12 +14,29 @@ class PasswordsController < ApplicationController
   end
 
   def create
+    # This line not only creates the password, but also the UserPassword record
     @password = current_user.passwords.create(password_params)
     if @password.persisted?
       redirect_to @password
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def edit
+  end
+
+  def update
+    if @password.update(password_params)
+      redirect_to @password
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @password.destroy
+    redirect_to root_path
   end
 
   private
